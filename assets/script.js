@@ -326,10 +326,7 @@ async function beginPart2() {
 
   try {
     window.wakeLock = await navigator.wakeLock.request('screen');
-    
-    // Handle page visibility changes
     document.addEventListener('visibilitychange', handleVisibilityChange);
-    // Handle page unload
     window.addEventListener('beforeunload', releaseWakeLock);
   } catch (err) {
     console.error(`Failed to request wake lock: ${err.name}, ${err.message}`);
@@ -656,11 +653,20 @@ async function releaseWakeLock() {
 }
 
 async function handleVisibilityChange() {
+  console.log('handleVisibilityChange', document.visibilityState);
   if (document.visibilityState === 'hidden') {
     await releaseWakeLock();
+    // Suspend audio context when hidden
+    if (audioCtx && audioCtx.state === 'running') {
+      await audioCtx.suspend();
+    }
   } else if (document.visibilityState === 'visible') {
     try {
       window.wakeLock = await navigator.wakeLock.request('screen');
+      // Resume audio context when visible
+      if (audioCtx && audioCtx.state === 'suspended') {
+        await audioCtx.resume();
+      }
     } catch (err) {
       console.error(`Failed to re-acquire wake lock: ${err.name}, ${err.message}`);
     }
