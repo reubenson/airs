@@ -153,6 +153,25 @@ function startAudio() {
 async function initializeAudio() {
   if (audioHasStarted) return;
 
+  convolver = audioCtx.createConvolver();
+
+  const processorPath = ASSET_DIR + 'audio-processor.js';
+  try {
+    // Check if AudioWorklet is supported
+    if (audioCtx.audioWorklet && window.AudioWorkletNode) {
+      await audioCtx.audioWorklet.addModule(processorPath);
+      processor = new AudioWorkletNode(audioCtx, "audio-processor");
+      processor.port.onmessage = (e) => {
+        updateAudioBufferData(e.data);
+      };
+    } else {
+      throw new Error('AudioWorklet is not supported in this browser');
+    }
+  } catch (error) {
+    // processor didn't load for some reason, so part II wont do very much
+    console.error('Audio processor initialization failed:', error);
+  }
+
   source = audioCtx.createBufferSource();
   source.loop = false;
 
@@ -427,19 +446,6 @@ document.addEventListener('DOMContentLoaded', async function() {
 
   canvasContainerEl = document.querySelector('#poems-container');
   audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-  convolver = audioCtx.createConvolver();
-
-  const processorPath = ASSET_DIR + 'audio-processor.js';
-  try {
-    await audioCtx.audioWorklet?.addModule(processorPath);
-    processor = new AudioWorkletNode(audioCtx, "audio-processor");
-    processor.port.onmessage = (e) => {
-      updateAudioBufferData(e.data);
-    };
-  } catch (error) {
-    // processor didn't load for some reason, so part II wont do very much
-    console.error(error);
-  }
 
   canvas = document.createElement('canvas');
   canvas.width = CANVAS_WIDTH;
