@@ -326,6 +326,11 @@ async function beginPart2() {
 
   try {
     window.wakeLock = await navigator.wakeLock.request('screen');
+    
+    // Handle page visibility changes
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+    // Handle page unload
+    window.addEventListener('beforeunload', releaseWakeLock);
   } catch (err) {
     console.error(`Failed to request wake lock: ${err.name}, ${err.message}`);
   }
@@ -364,14 +369,9 @@ async function resetState() {
 
   document.body.classList.remove('now-viewing');
 
-  if (window.wakeLock) {
-    try {
-      await window.wakeLock.release();
-      window.wakeLock = null;
-    } catch (err) {
-      console.error(`Failed to release wake lock: ${err.name}, ${err.message}`);
-    }
-  }
+  document.removeEventListener('visibilitychange', handleVisibilityChange);
+  window.removeEventListener('beforeunload', releaseWakeLock);
+  await releaseWakeLock();
 }
 
 function applyTransitions() {
@@ -642,4 +642,27 @@ function hslColorMatrix(h) {
   ]
 
   return addArrays(primaryArray, secondaryArray).join(" ");
+}
+
+async function releaseWakeLock() {
+  if (window.wakeLock) {
+    try {
+      await window.wakeLock.release();
+      window.wakeLock = null;
+    } catch (err) {
+      console.error(`Failed to release wake lock: ${err.name}, ${err.message}`);
+    }
+  }
+}
+
+async function handleVisibilityChange() {
+  if (document.visibilityState === 'hidden') {
+    await releaseWakeLock();
+  } else if (document.visibilityState === 'visible') {
+    try {
+      window.wakeLock = await navigator.wakeLock.request('screen');
+    } catch (err) {
+      console.error(`Failed to re-acquire wake lock: ${err.name}, ${err.message}`);
+    }
+  }
 }
