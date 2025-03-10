@@ -54,8 +54,8 @@ const CSS_TRANSITIONS = [
     transition: '90s opacity ease;'
   },
   {
-    selector: '#poems-container #part-2 p',
-    transition: '360s color linear, 360s background linear, 5s filter linear;'
+    selector: '#poems-container #part-2 .poem p',
+    transition: '360s color linear, 360s background linear, 10s filter ease-out;'
   }
 ]
 
@@ -174,9 +174,8 @@ async function initializeAudio() {
   gainNodeConvolution.connect(gainNodeConvolution2);
   gainNodeConvolution2.connect(sumNode);
 
-  // lower volume of player relative to animation
   const playerGainNode = audioCtx.createGain();
-  playerGainNode.gain.value = 1.0;
+  playerGainNode.gain.value = 1.2;
   sumNode.connect(playerGainNode);
   playerGainNode.connect(audioCtx.destination);
 
