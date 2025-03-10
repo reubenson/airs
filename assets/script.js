@@ -258,7 +258,8 @@ function updatePartStyles(part) {
 function handlePartSelection(part) {
   let hash = window.location.hash;
   const splitHash = hash.split('-');
-  const index = parseInt(splitHash[splitHash.length - 1]) - 1 || 0;
+  let index = parseInt(splitHash[splitHash.length - 1]) - 1 || 0;
+  if (hash.includes('#part-2')) index = 0;
 
   updatePartStyles(part);
 
@@ -475,13 +476,10 @@ document.addEventListener('DOMContentLoaded', async function() {
 });
 
 function handleNavigation(event) {
+  let clickedLeft = true;
   if (event.target.closest('.poems-header') || event.target.closest('nav')) {
     return;
   }
-
-  event.preventDefault();
-  event.stopPropagation();
-  let clickedLeft = true;
   
   if (event.type === 'keydown' && event.key === 'ArrowRight' || event.key === 'ArrowLeft') {
     clickedLeft = event.key === 'ArrowLeft';
@@ -492,6 +490,9 @@ function handleNavigation(event) {
   } else {
     return;
   }
+
+  event.preventDefault();
+  event.stopPropagation();
 
   let currentPart;
   if (window.location.hash.includes('#part-1')) {
