@@ -12,12 +12,12 @@ const convolutionFilepath = ASSET_DIR + 'airports-for-music-i-excerpt.mp3';
 
 // total duration 34'28" - 82.6MB
 const windFilepaths = [
-  ASSET_DIR + '2022-07-25 20.16.11.mp3', // 5'00"
   ASSET_DIR + '2023-08-31 17.03.15.mp3', // 7'28"
   ASSET_DIR + '2022-07-28 20.50.36.mp3', // 5'01"
+  ASSET_DIR + '2023-09-02 14.03.01.mp3', // 5'01"
+  ASSET_DIR + '2022-07-25 20.16.11.mp3', // 5'00"
   ASSET_DIR + '2023-10-16 13.31.39.mp3', // 7'00"
   ASSET_DIR + '2022-07-21 12.05.00.mp3', // 4'58"
-  ASSET_DIR + '2023-09-02 14.03.01.mp3', // 5'01"
 ]
 
 let colorMatrixEl;
@@ -653,7 +653,6 @@ async function releaseWakeLock() {
 }
 
 async function handleVisibilityChange() {
-  console.log('handleVisibilityChange', document.visibilityState);
   if (document.visibilityState === 'hidden') {
     await releaseWakeLock();
     // Suspend audio context when hidden
