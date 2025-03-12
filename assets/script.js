@@ -474,6 +474,10 @@ document.addEventListener('DOMContentLoaded', async function() {
   window.addEventListener('touchend', (event) => handleNavigation(event));
   window.addEventListener('keydown', (event) => handleNavigation(event));
 
+  window.addEventListener('popstate', () => {
+    handleRouting();
+  });
+
   handleRouting();
 });
 
