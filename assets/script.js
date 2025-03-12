@@ -1,6 +1,6 @@
 const CANVAS_WIDTH = 256;
 const CANVAS_HEIGHT = 256;
-const ASSET_DIR = '/public/html-review/';
+const ASSET_DIR = './assets/';
 
 let audioHasStarted = false;
 let convolutionInitialized = false;
